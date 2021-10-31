@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<launch>
+
+    <arg name="use_sim_time" default="true"/>
+
+<!-- 初始化实际机器人，具有单线激光雷达 -->
+    <arg name="x_init_pose" default="-3"/>
+    <arg name="y_init_pose" default="0"/>
+    <arg name="z_init_pose" default="0"/>
+
+    <!-- Start Gazebo simulator with a given environment -->
+    <include file="$(find gazebo_ros)/launch/willowgarage_world.launch" />
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find pioneer_simulator)/urdf/pioneer3dx.xacro" />
+
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_pioneer" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+          args="-x $(arg x_init_pose) -y $(arg y_init_pose) -z $(arg z_init_pose) -urdf -param robot_description -model robot_description"/>
+
+    <!-- publish TFs for static links -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- Load the environment map in the map_server -->
+    <node name="MapServer" pkg="map_server" type="map_server" args="$(find pioneer_simulator)/maps/map2.yaml" />
+
+
+    <!-- 注意amcl需要手动点击位置初始化 -->
+    <include file="$(find amcl)/examples/amcl_diff.launch">
+    </include>
+
+<!-- 初始化领航员 -->
+<arg name="robot_leader" default="/Leader"/>
+<group ns="$(arg robot_leader)">
+    <arg name="x_init_pose1" default="0"/>
+    <arg name="y_init_pose1" default="0"/>
+    <arg name="z_init_pose1" default="0"/>
+
+    <!-- Start Gazebo simulator with a given environment -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find pioneer_simulator)/urdf/pioneer3dx_ns.xacro ns:=$(arg robot_leader)"/>
+
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_pioneer" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+          args="-urdf -model $(arg robot_leader) -param robot_description -x $(arg x_init_pose1) -y $(arg y_init_pose1) -z $(arg z_init_pose1) "/>
+    <!-- publish TFs for static links -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+</group>
+
+    <node pkg="pioneer_simulator" type="laserscan_to_pointcloud2" name="laserscan_to_pointcloud2">
+        <remap from="/outpointcloud2" to="/pandar_points"/>
+    </node>
+    <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 map Leader/odom 10" />
+
+    <!-- RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find pioneer_simulator)/rviz/pioneer_double_car.rviz"/>
+    
+</launch>

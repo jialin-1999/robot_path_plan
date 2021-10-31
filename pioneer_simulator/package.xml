@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+  <name>pioneer_simulator</name>
+  <version>1.0.0</version>
+  <description>The pioneer_simulator package provides simulator for pioneer</description>
+
+  <author email="zhenz1996@qq.com">Zhen Zhang</author>
+  
+  <maintainer email="zhenz1996@qq.com">Zhen Zhang</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <run_depend>amcl</run_depend>
+  <run_depend>p2os_urdf</run_depend>
+  <run_depend>joy</run_depend>
+  <run_depend>map_server</run_depend>
+  <run_depend>gazebo_ros</run_depend>
+
+  <export>
+  </export>
+</package>

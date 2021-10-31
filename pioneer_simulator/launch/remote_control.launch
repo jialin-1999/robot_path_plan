@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Start the joystick-driver and remote-controller for operation-->
+    <node name="Joystick" pkg="joy" type="joy_node" output="screen">
+        <param name="dev" value="/dev/input/js0" />
+    </node>
+
+    <node name="JoyTwist" pkg="teleop_twist_joy" type="teleop_node" output="screen">
+        <param name="enable_button" value="0"/>
+        <param name="scale_linear" value="0.8"/>
+        <param name="scale_angular" value="0.5"/>
+	<remap from="/cmd_vel" to="/Leader/cmd_vel"/>
+    </node>
+    
+</launch>

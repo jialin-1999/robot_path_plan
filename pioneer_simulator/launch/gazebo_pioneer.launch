@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="x_init_pose" default="6"/>
+    <arg name="y_init_pose" default="-6"/>
+    <arg name="z_init_pose" default="0"/>
+    <arg name="use_sim_time" default="true"/>
+    
+    <!-- Start Gazebo simulator with a given environment -->
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find pioneer_simulator)/urdf/pioneer3dx.xacro" />
+
+    <!-- 室内仿真场景 -->
+    <!--<include file="$(find gazebo_ros)/launch/willowgarage_world.launch" />-->
+
+    <!-- 室外仿真场景 -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(find pioneer_simulator)/world/cleanCarSimLargeSpace200203.world"/>
+      <arg name="paused" value="false"/>
+      <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+      <arg name="gui" value="true"/>
+      <arg name="headless" value="false"/> <!-- Inert - see gazebo_ros_pkgs issue #491 -->
+      <arg name="recording" value="false"/>
+      <arg name="debug" value="false"/>
+    </include>
+
+    <!-- push robot_description to factory and spawn robot in gazebo -->
+    <node name="spawn_pioneer" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+          args="-x $(arg x_init_pose) -y $(arg y_init_pose) -z $(arg z_init_pose) -urdf -param robot_description -model robot_description"/>
+
+    <!-- publish TFs for static links -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- Load the environment map in the map_server -->
+    <!--<node name="MapServer" pkg="map_server" type="map_server" args="$(find pioneer_simulator)/maps/map2.yaml" />-->
+
+    <!--<include file="$(find amcl)/examples/amcl_diff.launch" />-->
+
+    <!-- Start the joystick-driver and remote-controller for operation-->
+    <!--<node name="Joystick" pkg="joy" type="joy_node" output="screen">
+        <param name="dev" value="/dev/input/js1" />
+    </node>
+    <node name="JoyTwist" pkg="teleop_twist_joy" type="teleop_node">
+        <param name="enable_button" value="0"/>
+        <param name="scale_linear" value="0.6"/>
+        <param name="scale_angular" value="0.5"/>
+    </node>-->
+
+    <!-- RViz -->
+    <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find pioneer_simulator)/rviz/robot_remote_gazebo_pioneer.rviz"/>-->
+    
+</launch>
