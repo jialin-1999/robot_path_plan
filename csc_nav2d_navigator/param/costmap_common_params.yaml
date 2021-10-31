@@ -1,0 +1,6 @@
+obstacle_range: 10  
+raytrace_range: 10  
+footprint: [[0.0,0.5], [0.0,-0.5], [-2.0,-0.5], [-2.0,0.5]]
+max_obstacle_height: 10  
+min_obstacle_height: -10
+map_type: costmap

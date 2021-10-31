@@ -1,0 +1,35 @@
+# Inflation params used for path planning
+map_inflation_radius: 1.3
+#室内0.75 室外1.0
+
+#这个值必须要大于robot_radius，因为这是对静态地图进行膨胀，膨胀半径当然要大于机器人半径，这个设置大，会让全局路径不靠边，但是不影响过门，因为在做路径规划时，只要不撞到就行，在开阔的地方会远离边界
+robot_radius: 0.8
+#这个是在navigator里面使用到的机器人半径，做全局规划时使用的。
+
+# Tolerance in target position for MoveToPosition2D (meter)
+navigation_goal_distance: 0.2
+
+# Toleranvce in target heading for MoveToPosition2D (radians)
+navigation_goal_angle: 0.2
+
+# Distance at which to turn off obstacle avoidance (meter)
+navigation_homing_distance: 1.2
+
+#speed
+SpeedMax: 0.7
+SpeedMin: 0.3
+
+#大于下面这个角度，机器人才原地自转 60
+rotate_threshold_deg: 30.0 
+
+#局部路径优化时的切弯系数，越小越安全越远离障碍物
+RayTrackSafetyValue: 0.2  
+
+#局部跟随的前瞻距离
+pathFollowRadius: 0.7
+
+#非上一帧最优路径的惩罚因子
+last_path_penalty: 1.3 #1.2
+
+#局部路径最少节点数
+minuimum_localPoints: 20

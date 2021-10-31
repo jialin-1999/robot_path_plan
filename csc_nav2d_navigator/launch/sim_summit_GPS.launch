@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Some general parameters-->
+    <param name="use_sim_time" value="true" /><!--仿真环境中该参数设为true-->
+
+<!--    <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0.0 0.0 1.0 0 0 0 map base_link 1000" />-->
+    
+    <rosparam file="$(find csc_nav2d_navigator)/param/ros.yaml"/>
+    <param name="map_frame" value="summit_xl_skid_map"/>
+    <param name="robot_frame" value="summit_xl_skid_base_link"/>
+
+    <!-- Start the Navigator to move the robot autonomously -->
+    <node name="LocalNavigator" pkg="csc_nav2d_navigator" type="local_navigator" output="screen" >
+        <remap from="/cmd_vel" to="/summit_xl_skid/robotnik_base_control/cmd_vel" />
+        <rosparam file="$(find csc_nav2d_navigator)/param/navigator_sim_summit.yaml"/>
+        <rosparam file="$(find csc_nav2d_navigator)/param/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+        <rosparam file="$(find csc_nav2d_navigator)/param/local_costmap_params_sim_summit.yaml" command="load"/>
+    </node>
+    <!-- 上层目标输入节点 -->
+    <node name="setTarget" pkg="csc_nav2d_navigator" type="set_target" output="screen" />
+    <node name="realsense_trans" pkg="test_pcl3" type="test_pcl3_node" output="screen" />
+    <node name="GPStoTF" pkg="csc_nav2d_navigator" type="GPStoTF" output="screen" />
+    <node name="GPS_input" pkg="csc_nav2d_navigator" type="test_GPS_input" output="screen" />
+
+<!--    <node name="GPSMarker" pkg="csc_nav2d_navigator" type="marker" output="screen" />-->
+    <node name="rviz" pkg="rviz" type="rviz" args=" -d $(find csc_nav2d_navigator)/rviz/GPS.rviz" />
+</launch>

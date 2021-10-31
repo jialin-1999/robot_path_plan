@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Some general parameters-->
+    <param name="use_sim_time" value="true" /><!--仿真环境中该参数设为true-->
+
+    <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0.0 0.0 0.0 0 0 0 base_link velodyne 1000" />
+
+    <!--<node pkg="tf" type="static_transform_publisher" name="link3_broadcaster" args="0.4 0 0.68 0 0 0 base_link velodyne 10" />-->
+    
+    <node name="GPStoTF" pkg="csc_nav2d_navigator" type="GPStoTF" output="screen" />
+
+    <node name="GPSMarker" pkg="csc_nav2d_navigator" type="marker" output="screen" />
+    <node name="rviz" pkg="rviz" type="rviz" args=" -d $(find csc_nav2d_navigator)/rviz/GPS.rviz" />
+</launch>

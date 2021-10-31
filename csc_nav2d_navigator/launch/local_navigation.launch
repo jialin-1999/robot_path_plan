@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Some general parameters-->
+    <param name="use_sim_time" value="false" /><!--仿真环境中该参数设为true-->
+
+    <!-- ins驱动 -->
+    <!--<include file="$(find ins_ros)/launch/ins.launch"/>-->
+    <!-- velodyne驱动 -->
+    <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
+
+    <rosparam file="$(find csc_nav2d_navigator)/param/ros.yaml"/>
+
+    <node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0.0 0.0 0.0 0 0 0 map odom 1000" />
+    <!--<node pkg="tf" type="static_transform_publisher" name="link2_broadcaster" args="0.0 0.0 1.0 0 0 0  base_link velodyne 1000" />-->
+
+    <!-- Start the Navigator to move the robot autonomously -->
+    <node name="LocalNavigator" pkg="csc_nav2d_navigator" type="local_navigator" output="screen" >
+        <rosparam file="$(find csc_nav2d_navigator)/param/navigator.yaml"/>
+        <rosparam file="$(find csc_nav2d_navigator)/param/costmap_common_params.yaml" command="load" ns="local_costmap"/>
+        <rosparam file="$(find csc_nav2d_navigator)/param/local_costmap_params.yaml" command="load"/>
+    </node>
+    <!-- 上层目标输入节点 -->
+    <node name="setTarget" pkg="csc_nav2d_navigator" type="set_target" output="screen" />
+    <!-- GPS转化为TF节点 odom->base_link -->
+    <node name="GPStoTF" pkg="csc_nav2d_navigator" type="GPStoTF" output="screen" />
+
+    <include file="$(find lio_sam)/launch/zju.launch"/>
+
+    <!-- realsense点云坐标系转化 加入base_link -> realsense -->
+    <include file="$(find realsense2_camera)/launch/low_cpu_2pointcloud.launch"/>
+    <node name="realsense_trans" pkg="test_pcl3" type="test_pcl3_node" output="log" />
+    
+    <!--<include file="$(find speed_control)/launch/speed_control.launch"/>-->
+    <!--<node name="base_controller" pkg="robot_base_controller" type="robot_base_controller">
+    	<param name="com_number" value="/dev/ttyUSB7"/>
+	<param name="base_controll" value="true"/>
+	<param name="bro_odom" value="false"/>
+	<param name="pub_odom" value="true"/>
+    </node>-->
+    <node name="GPSMarker" pkg="csc_nav2d_navigator" type="marker" output="screen" />
+
+    <!-- RVIZ to view the visualization -->
+    <node name="rviz" pkg="rviz" type="rviz" args=" -d $(find csc_nav2d_navigator)/rviz/localNavigation.rviz" />
+
+</launch>
