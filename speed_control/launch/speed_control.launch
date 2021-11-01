@@ -1,0 +1,5 @@
+<launch>
+    <node pkg = "speed_control" name = "speed_control" type = "speed_control" output = "screen"/>
+
+</launch>
+
